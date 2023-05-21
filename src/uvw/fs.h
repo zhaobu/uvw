@@ -161,9 +161,9 @@ struct fs_event {
     using fs_type = details::uvw_fs_type;
     using entry_type = details::uvw_dirent_type_t;
 
-    fs_event(const uv_fs_t &req, std::unique_ptr<const char[]> data)
+    fs_event(const uv_fs_t &req, std::shared_ptr<char[]> data)
         : fs_event{req} {
-        read.data = std::move(data);
+        read.data = data;
     }
 
     fs_event(const uv_fs_t &req)
@@ -198,7 +198,7 @@ struct fs_event {
     std::size_t result; /*!< Result value for the specific type. */
 
     struct {
-        std::unique_ptr<const char[]> data; /*!< A bunch of data read from the given path. */
+        std::shared_ptr<char[]> data; /*!< A bunch of data read from the given path. */
     } read;
 
     struct {
@@ -367,6 +367,8 @@ public:
      */
     void read(int64_t offset, unsigned int len);
 
+    void read(std::shared_ptr<char[]> buf, int64_t offset, unsigned int len);
+
     /**
      * @brief Sync [read](http://linux.die.net/man/2/preadv).
      *
@@ -379,7 +381,7 @@ public:
      *   * A bunch of data read from the given path.
      *   * The amount of data read from the given path.
      */
-    std::pair<bool, std::pair<std::unique_ptr<const char[]>, std::size_t>> read_sync(int64_t offset, unsigned int len);
+    std::pair<bool, std::pair<std::shared_ptr<const char[]>, std::size_t>> read_sync(int64_t offset, unsigned int len);
 
     /**
      * @brief Async [write](http://linux.die.net/man/2/pwritev).
@@ -393,7 +395,7 @@ public:
      * @param len The lenght of the submitted data.
      * @param offset Offset, as described in the official documentation.
      */
-    void write(std::unique_ptr<char[]> buf, unsigned int len, int64_t offset);
+    void write(std::shared_ptr<char[]> buf, unsigned int len, int64_t offset);
 
     /**
      * @brief Async [write](http://linux.die.net/man/2/pwritev).
@@ -420,7 +422,7 @@ public:
      * * A boolean value that is true in case of success, false otherwise.
      * * The amount of data written to the given path.
      */
-    std::pair<bool, std::size_t> write_sync(std::unique_ptr<char[]> buf, unsigned int len, int64_t offset);
+    std::pair<bool, std::size_t> write_sync(std::shared_ptr<char[]> buf, unsigned int len, int64_t offset);
 
     /**
      * @brief Async [fstat](http://linux.die.net/man/2/fstat).
@@ -571,7 +573,7 @@ public:
     operator file_handle() const noexcept;
 
 private:
-    std::unique_ptr<char[]> current{nullptr};
+    std::shared_ptr<char[]> current{nullptr};
     uv_buf_t buffer{};
     uv_file file{BAD_FD};
 };
