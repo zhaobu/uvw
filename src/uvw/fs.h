@@ -397,7 +397,7 @@ public:
      * @param len The lenght of the submitted data.
      * @param offset Offset, as described in the official documentation.
      */
-    void write(std::shared_ptr<char[]>& buf, unsigned int len, int64_t offset);
+    void write(std::shared_ptr<char[]> buf, unsigned int len, int64_t offset);
 
     /**
      * @brief Async [write](http://linux.die.net/man/2/pwritev).
@@ -424,7 +424,7 @@ public:
      * * A boolean value that is true in case of success, false otherwise.
      * * The amount of data written to the given path.
      */
-    std::pair<bool, std::size_t> write_sync(std::shared_ptr<char[]>& buf, unsigned int len, int64_t offset);
+    std::pair<bool, std::size_t> write_sync(std::shared_ptr<char[]> buf, unsigned int len, int64_t offset);
 
     /**
      * @brief Async [fstat](http://linux.die.net/man/2/fstat).

@@ -110,7 +110,7 @@ UVW_INLINE std::pair<bool, std::pair<std::shared_ptr<char[]>, std::size_t>> file
     return std::make_pair(!err, std::make_pair(current, err ? 0 : std::size_t(req->result)));
 }
 
-UVW_INLINE void file_req::write(std::shared_ptr<char[]>& buf, unsigned int len, int64_t offset) {
+UVW_INLINE void file_req::write(std::shared_ptr<char[]> buf, unsigned int len, int64_t offset) {
     current = buf;
     uv_buf_t bufs[] = {uv_buf_init(current.get(), len)};
     uv_fs_req_cleanup(this->raw());
@@ -123,7 +123,7 @@ UVW_INLINE void file_req::write(char *buf, unsigned int len, int64_t offset) {
     uv_fs_write(parent().raw(), raw(), file, bufs, 1, offset, &fs_request_callback);
 }
 
-UVW_INLINE std::pair<bool, std::size_t> file_req::write_sync(std::shared_ptr<char[]>& buf, unsigned int len, int64_t offset) {
+UVW_INLINE std::pair<bool, std::size_t> file_req::write_sync(std::shared_ptr<char[]> buf, unsigned int len, int64_t offset) {
     current = buf;
     uv_buf_t bufs[] = {uv_buf_init(current.get(), len)};
     auto req = raw();

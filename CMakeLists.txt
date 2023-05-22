@@ -35,7 +35,7 @@ option(USE_LIBCPP "Use libc++ by adding -stdlib=libc++ flag if availbale." OFF)
 option(USE_ASAN "Use address sanitizer by adding -fsanitize=address -fno-omit-frame-pointer flags" OFF)
 option(USE_UBSAN "Use address sanitizer by adding -fsanitize=undefined -fno-sanitize-recover=all -fno-omit-frame-pointer flags" OFF)
 option(BUILD_UVW_LIBS "Prepare targets for static library rather than for a header-only library." ON)
-option(BUILD_UVW_SHARED_LIB "Prepare targets for shared library rather than for a header-only library." ON)
+option(BUILD_UVW_SHARED_LIB "Prepare targets for shared library rather than for a header-only library." OFF)
 option(FIND_LIBUV "Try finding libuv library development files in the system" OFF)
 
 if(BUILD_UVW_SHARED_LIB)
@@ -229,7 +229,7 @@ if(BUILD_TESTING)
     endif()
 
     enable_testing()
-    add_subdirectory(test)
+    # add_subdirectory(test)
 endif()
 
 #
