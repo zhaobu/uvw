@@ -80,7 +80,7 @@ UVW_INLINE void file_req::read(int64_t offset, unsigned int len) {
     uv_fs_read(parent().raw(), raw(), file, bufs, 1, offset, &fs_read_callback);
 }
 
-UVW_INLINE void file_req::read(std::shared_ptr<char[]> buf, int64_t offset, unsigned int len) {
+UVW_INLINE void file_req::read(std::shared_ptr<char[]>& buf, int64_t offset, unsigned int len) {
     current = buf;
     buffer = uv_buf_init(current.get(), len);
     uv_buf_t bufs[] = {buffer};
@@ -88,7 +88,7 @@ UVW_INLINE void file_req::read(std::shared_ptr<char[]> buf, int64_t offset, unsi
     uv_fs_read(parent().raw(), raw(), file, bufs, 1, offset, &fs_read_callback);
 }
 
-UVW_INLINE std::pair<bool, std::pair<std::shared_ptr<const char[]>, std::size_t>> file_req::read_sync(int64_t offset, unsigned int len) {
+UVW_INLINE std::pair<bool, std::pair<std::shared_ptr<char[]>, std::size_t>> file_req::read_sync(int64_t offset, unsigned int len) {
     current = std::make_shared<char[]>(len);
     buffer = uv_buf_init(current.get(), len);
     uv_buf_t bufs[] = {buffer};
@@ -99,7 +99,18 @@ UVW_INLINE std::pair<bool, std::pair<std::shared_ptr<const char[]>, std::size_t>
     return std::make_pair(!err, std::make_pair(current, err ? 0 : std::size_t(req->result)));
 }
 
-UVW_INLINE void file_req::write(std::shared_ptr<char[]> buf, unsigned int len, int64_t offset) {
+UVW_INLINE std::pair<bool, std::pair<std::shared_ptr<char[]>, std::size_t>> file_req::read_sync(std::shared_ptr<char[]>& buf, int64_t offset, unsigned int len) {
+    current = buf;
+    buffer = uv_buf_init(current.get(), len);
+    uv_buf_t bufs[] = {buffer};
+    auto req = raw();
+    uv_fs_req_cleanup(this->raw());
+    uv_fs_read(parent().raw(), req, file, bufs, 1, offset, nullptr);
+    bool err = req->result < 0;
+    return std::make_pair(!err, std::make_pair(current, err ? 0 : std::size_t(req->result)));
+}
+
+UVW_INLINE void file_req::write(std::shared_ptr<char[]>& buf, unsigned int len, int64_t offset) {
     current = buf;
     uv_buf_t bufs[] = {uv_buf_init(current.get(), len)};
     uv_fs_req_cleanup(this->raw());
@@ -112,7 +123,7 @@ UVW_INLINE void file_req::write(char *buf, unsigned int len, int64_t offset) {
     uv_fs_write(parent().raw(), raw(), file, bufs, 1, offset, &fs_request_callback);
 }
 
-UVW_INLINE std::pair<bool, std::size_t> file_req::write_sync(std::shared_ptr<char[]> buf, unsigned int len, int64_t offset) {
+UVW_INLINE std::pair<bool, std::size_t> file_req::write_sync(std::shared_ptr<char[]>& buf, unsigned int len, int64_t offset) {
     current = buf;
     uv_buf_t bufs[] = {uv_buf_init(current.get(), len)};
     auto req = raw();
